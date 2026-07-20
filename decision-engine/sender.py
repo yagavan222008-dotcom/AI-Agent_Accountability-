@@ -5,15 +5,38 @@ from schema import DecisionRecord
 
 
 def _post_record(record: DecisionRecord, url: str) -> requests.Response:
-    """Helper to perform the HTTP POST request to the ledger endpoint."""
-    headers = {"Content-Type": "application/json"}
-    payload = record.to_json()
+    """Send the decision to the Trust Engine."""
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    # Convert the Pydantic model to a dictionary
+    record_dict = record.model_dump()
+
+    # Build the request in the format expected by the Trust Engine
+    request_body = {
+        "decision_id": record_dict["decision_id"],
+        "payload": {
+            "timestamp": record_dict["timestamp"],
+            "options_considered": record_dict["options_considered"],
+            "chosen_option": record_dict["chosen_option"],
+            "reasoning": record_dict["reasoning"],
+            "confidence": record_dict["confidence"],
+            "agent_version": record_dict["agent_version"]
+        }
+    }
+
+    print("Sending JSON:")
+    print(json.dumps(request_body, indent=2))
+
     response = requests.post(
         url,
-        data=payload,
+        json=request_body,
         headers=headers,
         timeout=5.0
     )
+
     return response
 
 
@@ -22,12 +45,14 @@ def _attempt_send(record: DecisionRecord, url: str) -> bool:
     response = _post_record(record, url)
     if response.status_code in (200, 201):
         response_json = response.json()
-        record_hash = response_json.get("record_hash")
+        current_hash = response_json.get("current_hash")
         print("Decision successfully logged.")
-        print(record_hash)
+        print("Current Hash:", current_hash)
         return True
     else:
-        # Raise HTTPError for any non-success status code
+        print("Status Code:", response.status_code)
+        print("Response Body:", response.text)
+
         raise requests.HTTPError(
             f"Unexpected status code: {response.status_code}",
             response=response
@@ -52,7 +77,7 @@ def send_to_ledger(record: DecisionRecord, ledger_url: str) -> bool:
     Returns:
         True if successfully logged, False if both attempts fail.
     """
-    url = f"{ledger_url}/log"
+    url = f"{ledger_url}/ledger/log"
 
     # First attempt
     try:

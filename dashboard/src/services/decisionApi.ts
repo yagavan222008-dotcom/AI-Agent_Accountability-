@@ -7,7 +7,7 @@ export const decisionApi = {
    * Path: GET /history
    */
   getHistory: async (): Promise<DecisionRecord[]> => {
-    const response = await decisionClient.get<DecisionRecord[]>('/history');
+    const response = await decisionClient.get('/ledger/chain');
     return response.data;
   },
 

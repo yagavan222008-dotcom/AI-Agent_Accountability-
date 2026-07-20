@@ -1,0 +1,88 @@
+{
+  "$defs": {
+    "Option": {
+      "additionalProperties": false,
+      "description": "Represents an individual option considered during the decision-making process.",
+      "properties": {
+        "option_id": {
+          "description": "Unique identifier for the option.",
+          "title": "Option Id",
+          "type": "string"
+        },
+        "description": {
+          "description": "Detailed description of the option.",
+          "title": "Description",
+          "type": "string"
+        },
+        "score": {
+          "description": "The evaluated score for this option.",
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "option_id",
+        "description",
+        "score"
+      ],
+      "title": "Option",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Represents a complete record of a decision made by the system.",
+  "properties": {
+    "decision_id": {
+      "description": "Unique identifier for the decision, formatted as a UUID string.",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "ISO 8601 formatted datetime string indicating when the decision was made.",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "options_considered": {
+      "description": "List of all options that were considered.",
+      "items": {
+        "$ref": "#/$defs/Option"
+      },
+      "title": "Options Considered",
+      "type": "array"
+    },
+    "chosen_option": {
+      "description": "The option_id of the chosen option.",
+      "title": "Chosen Option",
+      "type": "string"
+    },
+    "reasoning": {
+      "description": "Detailed explanation/reasoning behind the choice (minimum 20 characters).",
+      "minLength": 20,
+      "title": "Reasoning",
+      "type": "string"
+    },
+    "confidence": {
+      "description": "Confidence score for the decision, ranging from 0.0 to 1.0 inclusive.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "agent_version": {
+      "description": "The version of the agent that made the decision.",
+      "title": "Agent Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_id",
+    "timestamp",
+    "options_considered",
+    "chosen_option",
+    "reasoning",
+    "confidence",
+    "agent_version"
+  ],
+  "title": "DecisionRecord",
+  "type": "object"
+}

@@ -9,8 +9,8 @@ def main() -> None:
     # Load environment variables from .env
     load_dotenv()
 
-    openai_key = os.getenv("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")
-    ledger_url = os.getenv("http://localhost:8000")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    ledger_url = os.getenv("LEDGER_URL")
 
     # Verify environment variables exist
     if not openai_key:
